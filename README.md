@@ -304,6 +304,103 @@ Next, we can use previously saved weights to create a new model that will make a
 Result:\
 ![Result](images/5.png "Result")
 
+# ![Week 6-2](Weekly_sessions/week6/week_6_2.ipynb "Go to code")
+### Goals of week 6-2:
+- [x] Explore the Fashion MNIST dataset
+- [x] Perform image denoising unsing Neural Network
+
+### Exploring the Fashion MNIST dataset
+Dataset consists of low resolution pictures of clothes and accessories.\
+Let's randomly pick an item from dataset and display it.\
+![original image](images/13.png "original image")
+
+Now let's prepare a noisy dataset, that Neural Network will try to clear out\
+
+```python
+X_train_noisy = X_train + 10*np.random.normal(0,1,size=X_train.shape)
+```
+Noisy image looks like this:\
+![noisy image](images/14.png "noisy image")
+
+### Building a model
+Let's define parameters of a Neural Network
+```python
+n_input = 784 # Input image is of size 28 x 28 
+hidden_layer_1 = 256
+hidden_layer_2 = 32
+hidden_layer_3 = 32
+hidden_layer_4 = 256
+output_layer = 784 # Same as the n_input dimension
+
+# Parameters
+learning_rate = 0.1
+epochs = 100
+batch_size = 100
+```
+Weights and Biases
+```python
+Weight_NN = {"W1" : tf.Variable(tf.random_normal([n_input, hidden_layer_1])),
+             "W2" : tf.Variable(tf.random_normal([hidden_layer_1, hidden_layer_2])),
+             "W3" : tf.Variable(tf.random_normal([hidden_layer_2, hidden_layer_3])),
+             "W4" : tf.Variable(tf.random_normal([hidden_layer_3, hidden_layer_4])),
+             "W5" : tf.Variable(tf.random_normal([hidden_layer_4, output_layer]))
+}
+
+Bias_NN = {"B1" : tf.Variable(tf.random_normal([hidden_layer_1])),
+           "B2" : tf.Variable(tf.random_normal([hidden_layer_2])),
+           "B3" : tf.Variable(tf.random_normal([hidden_layer_3])),
+           "B4" : tf.Variable(tf.random_normal([hidden_layer_4])),
+           "B5" : tf.Variable(tf.random_normal([output_layer]))
+}
+```
+Now we can connect layers
+```python
+Z1 = tf.add(tf.matmul(X, Weight_NN["W1"]), Bias_NN["B1"])
+Z1_out = tf.nn.sigmoid(Z1)
+
+Z2 = tf.add(tf.matmul(Z1_out, Weight_NN["W2"]), Bias_NN["B2"])
+Z2_out = tf.nn.sigmoid(Z2)
+
+Z3 = tf.add(tf.matmul(Z2_out, Weight_NN["W3"]), Bias_NN["B3"])
+Z3_out = tf.nn.sigmoid(Z3)
+
+Z4 = tf.add(tf.matmul(Z3_out, Weight_NN["W4"]), Bias_NN["B4"])
+Z4_out = tf.nn.sigmoid(Z4)
+
+Z5 = tf.add(tf.matmul(Z4_out, Weight_NN["W5"]), Bias_NN["B5"])
+Z5_out = tf.nn.sigmoid(Z5)
+
+Z1 = tf.layers.dense(X, hidden_layer_1, activation = tf.nn.sigmoid)
+Z2 = tf.layers.dense(Z1, hidden_layer_2, activation = tf.nn.sigmoid)
+Z3 = tf.layers.dense(Z1, hidden_layer_3, activation = tf.nn.sigmoid)
+Z4 = tf.layers.dense(Z1, hidden_layer_4, activation = tf.nn.sigmoid)
+NN_output = tf.layers.dense(Z4, output_layer)
+```
+And define metrics
+```python
+# The loss funciton
+computed_loss = tf.reduce_mean(tf.square(NN_output-Y))
+
+# Define the optimizer
+optimizer = tf.train.AdagradOptimizer(learning_rate).minimize(computed_loss)
+```
+Now Neural Network can be trained.
+```
+Epoch 99 / 100 loss 2750.8054
+```
+After training we can try denoising an image using prepared Neural Network and compare the results.\
+Original image:\
+![Original image](images/10.png "Original image")
+
+Noisy image:\
+![Noisy image](images/11.png "Noisy image")
+
+Denoised image:\
+![Denoised image](images/12.png "Denoised image")
+
+
+
+
 # ![Week 7-1](Weekly_sessions/week7/week_7.ipynb "Go to code")
 ### Goals of week 7-1:
 - [x] Exploring the CIFAR10 dataset
