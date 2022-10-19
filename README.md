@@ -147,7 +147,7 @@ Tensorboards are avaliable to be ran inside the cells of google colab.
 For enabling inline tensorboard run `%load_ext tensorboard`
 and `%tensorboard --logdir='./logs'` with specified logging folder used in program.\
 The output of a tensorboard with computational graph looks like this:
-![Computational graph](images/1.png)
+![Computational graph](images/1.png "Computational graph")
 
 ## `tf.summary.scalar` and `tf.summary.histogram` commands
 To understand how these commands work, let's run a following script:
@@ -185,3 +185,5 @@ with tf.Session() as sess:
     writer.add_summary(summary2, i)
 ```
 Now we can visualize results in tensorboard
+![tf.summary.scalar](images/3.png "tf.summary.scalar")
+![tf.summary.histogram](images/7.png "tf.summary.histogram")
