@@ -304,7 +304,6 @@ Next, we can use previously saved weights to create a new model that will make a
 Result:\
 ![Result](images/5.png "Result")
 
-
 # ![Week 7-1](Weekly_sessions/week7/week_7.ipynb "Go to code")
 ### Goals of week 7-1:
 - [x] Exploring the CIFAR10 dataset
@@ -315,3 +314,53 @@ Now we can take a look at example data, stored in the dataset:\
 ![Boat](images/9.png "Boat")\
 This image has category '8'
 
+# ![Week 7-2](Weekly_sessions/week7/week_7_2.ipynb "Go to code")
+### Goals of week 7-2:
+- [x] Building a model for predicting category in the CIFAR10 dataset
+
+### Result
+Let's configure a model
+```python
+# Model with 2 convolutional and 1 fully-connected layer
+model = nn.Sequential(
+    nn.Conv2d(3, 64, 5, stride=2, padding=2), # Output is 64x16x16
+    nn.ReLU(),
+    nn.Conv2d(64, 64, 3, stride=2, padding=1), # Output is 64x8x8
+    nn.ReLU(),
+    nn.Flatten(),
+    nn.Linear(64 * 8 * 8, 10)
+)
+```
+```python
+# Retrieve layers for custom weight initialization
+layers = next(model.modules())
+conv_layer0 = layers[0]
+conv_layer1 = layers[2]
+output_layer = layers[5]
+
+# Kaiming (He) initialization
+nn.init.kaiming_normal_(conv_layer0.weight)
+nn.init.constant_(conv_layer0.bias, 0.0)
+nn.init.kaiming_normal_(conv_layer0.weight)
+nn.init.constant_(conv_layer1.bias, 0.0)
+
+# Xavier (Glorot) initialization
+nn.init.xavier_uniform_(output_layer.weight)
+nn.init.constant_(output_layer.bias, 0.0)
+
+# Loss function and optimizer
+optimizer = torch.optim.Adam(model.parameters())
+loss_function = nn.CrossEntropyLoss()
+```
+Training:
+```python
+# Train the model
+train_model(model, device, EPOCHS, BATCH_SIZE, trainset, testset, optimizer, loss_function, 'acc')
+```
+
+Training result:
+```python
+Epoch 128/128 loss: 0.1304 - acc: 0.9665 - val_loss: 10.4689 - val_acc: 0.5475
+
+[0.96649072296865, 0.5475239616613419]
+```
