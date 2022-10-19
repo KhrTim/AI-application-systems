@@ -303,3 +303,15 @@ For the test, an image of '7' was downloaded from the web.\
 Next, we can use previously saved weights to create a new model that will make a prediction.\
 Result:\
 ![Result](images/5.png "Result")
+
+
+# ![Week 7-1](Weekly_sessions/week7/week_7.ipynb "Go to code")
+### Goals of week 7-1:
+- [x] Exploring the CIFAR10 dataset
+
+### Result
+Let's import the dataset using following command: `from torchvision.datasets import CIFAR10`\
+Now we can take a look at example data, stored in the dataset:\
+![Boat](images/9.png "Boat")\
+This image has category '8'
+
