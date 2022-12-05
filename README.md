@@ -622,3 +622,45 @@ Image class: 200 , probability = 0.110
 Image class: 193 , probability = 0.018
 Image class: 199 , probability = 0.010
 ```
+
+# ![Week 10-2](Weekly_sessions/week9/Week_10_2.ipynb "Go to code")
+### Goals of week 10-2:
+- [x] Working with keras Sequential
+- [x] Working with keras API
+
+### Result
+Let's create a simple Sequential model...
+```python
+model = keras.Sequential([
+    layers.Dense(64, activation="relu"),
+    layers.Dense(10, activation="softmax")
+])
+```
+..and build it
+```python
+model.build(input_shape=(None, 3))
+```
+It is possible to build the same configuration incrementally
+```python
+inputs = keras.Input(shape=(3,), name="my_input")
+features = layers.Dense(64, activation="relu")(inputs)
+outputs = layers.Dense(10, activation="softmax")(features)
+model = keras.Model(inputs=inputs, outputs=outputs)
+```
+Let's take a look at the model that was built using `model.summary()` method
+```
+Model: "model_1"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ my_input (InputLayer)       [(None, 3)]               0         
+                                                                 
+ dense_6 (Dense)             (None, 64)                256       
+                                                                 
+ dense_7 (Dense)             (None, 10)                650       
+                                                                 
+=================================================================
+Total params: 906
+Trainable params: 906
+Non-trainable params: 0
+```
