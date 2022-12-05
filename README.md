@@ -664,3 +664,37 @@ Total params: 906
 Trainable params: 906
 Non-trainable params: 0
 ```
+# ![Week 11](Weekly_sessions/week9/Week_11.ipynb "Go to code")
+### Goals of week 11:
+- [x] Working with real data
+- [x] Predicting bookstore monthliy sales  
+
+### Result
+At first let's explore given dataset
+-- plot
+Now, let's make a naive prediction by shifitng a given data
+-- plot 2
+Time to build and train a RNN
+```python
+# Custom layer that retrieves only last time step from RNN output.
+class LastTimestep(nn.Module):
+  def forward(self, inputs):
+    return inputs[1][0]
+
+# Create RNN model
+model = nn.Sequential(
+    nn.RNN(1,128, nonlinearity='relu', batch_first=True),
+    LastTimestep(),
+    nn.Linear(128, 1)
+)
+
+# Loss function and optimizer
+optimizer = torch.optim.Adam(model.parameters())
+loss_function = nn.MSELoss()
+
+# Train model
+train_model(model, device, EPOCHS, BATCH_SIZE, trainset, testset, optimizer,
+            loss_function, "mae")     
+```
+Now we can plot the prediciton of our RNN
+-- plot
