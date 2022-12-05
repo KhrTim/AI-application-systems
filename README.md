@@ -580,3 +580,45 @@ Model evealations are given in the following table
 |Conf3|64/64/1|Dropout=0.2|10.0|12.6|
 |Conf4|128/128/64/1|Dropout=0.2|7.3|13.0|
 |Conf5|128/128/64/1|Dropout=0.3|11.3|13.0|
+
+# ![Week 10-1](Weekly_sessions/week9/Week_10_1.ipynb "Go to code")
+### Goals of week 10-1:
+- [x] Working with keras Resnet50
+
+### Result
+As a sample image for working with resnet50 was choosen this picture of a dog:
+-- picutre of a dog
+At first we need to preprocess the chosen image
+```python
+preprocess = transforms.Compose([
+    transforms.Resize((224,224)),
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[0.485, 0.456,0.406], std=[0.229, 0.224, 0.225])
+]) # Parameters recommended by pytorch.org
+input_tensor = preprocess(image)
+```
+Then, we load pretrained model
+```python
+model = torchvision.models.resnet50(weights=torchvision.models.ResNet50_Weights.IMAGENET1K_V1)
+model.eval()
+```
+Make the prediction
+```python
+inputs = inputs.to(device)
+with torch.no_grad():
+  outputs = model(inputs)
+```
+And print 5 most probable classes
+```python
+_, indices = torch.sort(probabilities, descending=True)
+for i in range(0,5):
+  print("Image class:", indices[i].item(), ", probability = %4.3f" % probabilities[indices[i]].item())
+```
+As a result we get the following data:
+```
+Image class: 232 , probability = 0.649
+Image class: 231 , probability = 0.131
+Image class: 200 , probability = 0.110
+Image class: 193 , probability = 0.018
+Image class: 199 , probability = 0.010
+```
