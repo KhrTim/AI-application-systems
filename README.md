@@ -581,7 +581,7 @@ Model evealations are given in the following table
 |Conf4|128/128/64/1|Dropout=0.2|7.3|13.0|
 |Conf5|128/128/64/1|Dropout=0.3|11.3|13.0|
 
-# ![Week 10-1](Weekly_sessions/week9/Week_10_1.ipynb "Go to code")
+# ![Week 10-1](Weekly_sessions/week10/Week_10_1.ipynb "Go to code")
 ### Goals of week 10-1:
 - [x] Working with keras Resnet50
 
@@ -623,7 +623,7 @@ Image class: 193 , probability = 0.018
 Image class: 199 , probability = 0.010
 ```
 
-# ![Week 10-2](Weekly_sessions/week9/Week_10_2.ipynb "Go to code")
+# ![Week 10-2](Weekly_sessions/week10/Week_10_2.ipynb "Go to code")
 ### Goals of week 10-2:
 - [x] Working with keras Sequential
 - [x] Working with keras API
@@ -664,7 +664,7 @@ Total params: 906
 Trainable params: 906
 Non-trainable params: 0
 ```
-# ![Week 11](Weekly_sessions/week9/Week_11.ipynb "Go to code")
+# ![Week 11](Weekly_sessions/week11/Week_11.ipynb "Go to code")
 ### Goals of week 11:
 - [x] Working with real data
 - [x] Predicting bookstore monthliy sales  
@@ -698,3 +698,87 @@ train_model(model, device, EPOCHS, BATCH_SIZE, trainset, testset, optimizer,
 ```
 Now we can plot the prediciton of our RNN
 -- plot
+
+
+# ![Week 12](Weekly_sessions/week12/Week_12.ipynb "Go to code")
+### Goals of week 12:
+- [x] Working with real data
+- [x] Trying different approaches starting from non-machine learning method
+- [x] Understanding RNNs
+
+### Result
+Given the jena_clinmate data `!wget https://s3.amazonaws.com/keras-datasets/jena_climate_2009_2016.csv.zip`
+Let's plot the dataset
+-- plot
+After data preprocessing and preparing, let's make a common sence non-machine learning model
+```python
+def evaluate_naive_method(dataset):
+  total_abs_err = 0.
+  samples_seen = 0
+  for samples, targets in dataset:
+    preds = samples[:,-1,1] * std[1] + mean[1]
+    total_abs_err += np.sum(np.abs(preds-targets))
+    samples_seen += samples.shape[0]
+  return total_abs_err / samples_seen
+```
+The results of this model are
+```
+Validation MAE: 2.44
+Test MAE: 2.62
+```
+Next approach is a densely connected network
+```python
+model = keras.models.load_model("jena_dense.keras")
+```
+And its result
+```
+Test MAE: 2.65
+```
+Let's plot the results
+-- polot
+Moving on to a 1D convolution model
+```python
+inputs = keras.Input(shape=(sequence_length, raw_data.shape[-1]))
+x = layers.Conv1D(8, 24, activation="relu")(inputs)
+x = layers.MaxPooling1D(2)(x)
+x = layers.Conv1D(8, 12, activation="relu")(x)
+x = layers.MaxPooling1D(2)(x)
+x = layers.Conv1D(8, 6, activation="relu")(x)
+x = layers.GlobalAveragePooling1D()(x)
+outputs = layers.Dense(1)(x)
+model = keras.Model(inputs, outputs)
+```
+Result
+```
+Test MAE: 3.15
+```
+Now we can try a simple LSTM model
+```python
+x = layers.LSTM(16)(inputs)
+outputs = layers.Dense(1)(x)
+model = keras.Model(inputs, outputs)
+```
+And its score:
+```
+Test MAE: 2.57
+```
+### Understanding RNNs
+Here, we can start from making our own RNN from scratch
+```python
+import numpy as np
+timesteps = 100
+input_features = 32
+output_features = 64
+inputs = np.random.random((timesteps, input_features))
+state_t = np.zeros((output_features,))
+W = np.random.random((output_features, input_features))
+U = np.random.random((output_features, output_features))
+b = np.random.random((output_features,))
+successive_ouputs = []
+for input_t in inputs:
+  output_t = np.tanh(np.dot(W, input_t) + np.dot(U, state_t) + b)
+  successive_ouputs.append(output_t)
+  state_t = output_t
+final_output_sequence = np.stack(successive_ouputs, axis=0)
+```
+RNNs can vary in a huge scope and some of the most basic RNNs are described in week's 12 notebook
