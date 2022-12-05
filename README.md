@@ -490,3 +490,93 @@ Prediction:  19.704561 , true_value:  18.8
 Prediction:  20.227697 , true_value:  19.0
 Prediction:  33.061592 , true_value:  27.0
 ```
+# ![Week 9-2](Weekly_sessions/week9/Week_9_2.ipynb "Go to code")
+### Goals of week 9-2:
+- [x] Comparing different neural network architectures
+- [x] Learning about dropout in neural network architectures
+
+### Result
+5 different neural network architectures were tested:
+- Configuration 5
+```python
+model = Sequential()
+model.add(Dense(128, activation='relu', input_shape=[13]))
+model.add(Dropout(0.3))
+model.add(Dense(128, activation='relu'))
+model.add(Dropout(0.3))
+model.add(Dense(64, activation='relu'))
+model.add(Dropout(0.3))
+model.add(Dense(1, activation='linear'))
+
+model.compile(loss="mean_squared_error", optimizer="adam", 
+              metrics=["mean_absolute_error"])
+```
+- Configuration 4
+```python
+model = Sequential()
+model.add(Dense(128, activation='relu', input_shape=[13]))
+model.add(Dropout(0.2))
+model.add(Dense(128, activation='relu'))
+model.add(Dropout(0.2))
+model.add(Dense(64, activation='relu'))
+model.add(Dropout(0.2))
+model.add(Dense(1, activation='linear'))
+
+model.compile(loss="mean_squared_error", optimizer="adam", 
+              metrics=["mean_absolute_error"])
+```
+- Configuration 3
+```python
+model = Sequential()
+model.add(Dense(64, activation='relu', input_shape=[13]))
+model.add(Dropout(0.2))
+model.add(Dense(64, activation='relu'))
+model.add(Dropout(0.2))
+model.add(Dense(1, activation='linear'))
+
+model.compile(loss="mean_squared_error", optimizer="adam", 
+              metrics=["mean_absolute_error"])
+model.summary()
+```
+- Configuration 2
+```python
+model = Sequential()
+model.add(Dense(64, activation='relu',
+kernel_regularizer=l2(0.1),
+bias_regularizer=l2(0.1),
+input_shape=[13]))
+model.add(Dense(64, activation='relu',
+kernel_regularizer=l2(0.1),
+bias_regularizer=l2(0.1)))
+model.add(Dense(1, activation='linear',
+kernel_regularizer=l2(0.1),
+bias_regularizer=l2(0.1)))
+
+model.compile(loss="mean_squared_error", optimizer="adam", 
+              metrics=["mean_absolute_error"])
+```
+- Configuration 1
+```python
+model = Sequential()
+model.add(Dense(64, activation='relu', input_shape=[13]))
+model.add(Dense(64, activation='relu'))
+model.add(Dense(1, activation='linear'))
+
+model.compile(loss="mean_squared_error", optimizer="adam", 
+              metrics=["mean_absolute_error"])
+```
+
+All architectures were tested and trained on a keras `boston_housing` dataset
+```python
+boston_housing = keras.datasets.boston_housing
+(raw_x_train, y_train), (raw_x_test, y_test) = boston_housing.load_data()
+```
+
+Model evealations are given in the following table
+|CONFIGURATION|TOPOLOGY|REGULARIZATION|TRAINING ERROR| TEST ERROR|
+|:-------------:|:--------:|:--------------:|:--------------:|:-----------:|
+|Conf1|64/64/1|None|0.76|12.8|
+|Conf2|64/64/1|L2=0.1|8.9|20.6|
+|Conf3|64/64/1|Dropout=0.2|10.0|12.6|
+|Conf4|128/128/64/1|Dropout=0.2|7.3|13.0|
+|Conf5|128/128/64/1|Dropout=0.3|11.3|13.0|
