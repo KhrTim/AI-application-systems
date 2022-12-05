@@ -461,3 +461,32 @@ Epoch 128/128 loss: 0.1304 - acc: 0.9665 - val_loss: 10.4689 - val_acc: 0.5475
 
 [0.96649072296865, 0.5475239616613419]
 ```
+
+
+# ![Week 9-1](Weekly_sessions/week9/week_9.ipynb "Go to code")
+### Goals of week 9-1:
+- [x] Building a neural network using Keras Sequential and Keras Layers
+
+### Result
+Let's build a model:
+```python
+model = Sequential()
+model.add(Dense(64, activation='relu', input_shape=[13]))
+model.add(Dense(64, activation='relu'))
+model.add(Dense(1, activation='linear'))
+model.compile(loss="mean_squared_error", optimizer="adam", 
+              metrics=["mean_absolute_error"])
+```
+
+We will train and test our model on keras `boston_housing` dataset
+```python
+boston_housing = keras.datasets.boston_housing
+(raw_x_train, y_train), (raw_x_test, y_test) = boston_housing.load_data()
+```
+Model's results:
+```python
+Prediction:  6.04861 , true_value:  7.2
+Prediction:  19.704561 , true_value:  18.8
+Prediction:  20.227697 , true_value:  19.0
+Prediction:  33.061592 , true_value:  27.0
+```
