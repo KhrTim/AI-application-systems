@@ -463,9 +463,9 @@ Epoch 128/128 loss: 0.1304 - acc: 0.9665 - val_loss: 10.4689 - val_acc: 0.5475
 ```
 
 
-# ![Week 9-1](Weekly_sessions/week9/week_9.ipynb "Go to code")
+# ![Week 9-1](Weekly_sessions/week9/Week_9.ipynb "Go to code")
 ### Goals of week 9-1:
-- [x] Building a neural network using Keras Sequential and Keras Layers
+- [x] Building a neural network using Keras Sequential and Keras Dense
 
 ### Result
 Let's build a model:
