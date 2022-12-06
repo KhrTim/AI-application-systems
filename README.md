@@ -782,3 +782,107 @@ for input_t in inputs:
 final_output_sequence = np.stack(successive_ouputs, axis=0)
 ```
 RNNs can vary in a huge scope and some of the most basic RNNs are described in week's 12 notebook
+
+# ![Week 13](Weekly_sessions/week_13/Week_13_1.ipynb "Go to code")
+### Goals of week 13:
+- [x] Working with real data
+- [x] Working with TextVectorization
+- [x] Working with natural language processing using IMDB reviews
+- [x] Testing different NLP models
+ 
+### Result
+Let's start with making a text vectorizer - a program that encodes sentences to sequences of numbers
+```python
+class Vectorizer:
+  def standartize(self, text):
+    text = text.lower()
+    return "".join(char for char in text if char not in string.punctuation)
+
+  def tokenize(self, text):
+    text = self.standartize(text)
+    return text.split()
+
+  def make_vocabulary(self, dataset):
+    self.vocabulary = {"" : 0, "[UNK]" : 1}
+    for text in dataset:
+      text = self.standartize(text)
+      tokens = self.tokenize(text)
+      for token in tokens:
+        if token not in self.vocabulary:
+          self.vocabulary[token] = len(self.vocabulary)
+    self.inverse_vocabulary = dict(
+        (v, k) for k, v in self.vocabulary.items()
+    )
+
+  def encode(self, text):
+    text = self.standartize(text)
+    tokens = self.tokenize(text)
+    return [self.vocabulary.get(token, 1) for token in tokens]
+
+  def decode(self, int_sequence):
+    return " ".join(
+        self.inverse_vocabulary.get(i, "[UNK]") for i in int_sequence
+    )
+```
+
+Now let's see how it works
+```
+"I write, rewrite, and still rewrite again" -> [2, 3, 5, 7, 1, 5, 6]
+```
+Time to work with real data
+```
+!curl -O https://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz
+```
+Let's create a unigram model
+```python
+model = get_model()
+model.summary()
+callbacks = [
+    keras.callbacks.ModelCheckpoint("binary_1gram.keras",
+                                    save_best_only=True)
+]
+```
+Its accuracy is
+```
+Test acc: 0.883
+```
+Bigram model
+```python
+model = get_model()
+model.summary()
+callbacks = [keras.callbacks.ModelCheckpoint("binary_2gram.keras",
+                                             save_best_only=True)
+]
+```
+Accuracy
+```
+Test acc: 0.898
+```
+TF-IDF model
+```python
+model = get_model()
+model.summary()
+callbacks = [
+    keras.callbacks.ModelCheckpoint("tfidf_2gram.keras",
+                                    save_best_only=True)
+]
+```
+Accuracy
+```
+Test acc: 0.944
+```
+
+Now, after choosing the best model, we can analyze the given text
+```python
+raw_text_data = tf.convert_to_tensor([
+    ["That's the best movie I've ever seen in my life"]
+])
+predictions = inference_model(raw_text_data)
+print(f"{float(predictions[0] * 100):.2f} percent positive")
+```
+Output
+```
+98.56 percent positive
+```
+
+As we can see, model works very well!
