@@ -886,3 +886,170 @@ Output
 ```
 
 As we can see, model works very well!
+
+# ![Week 13-2](Weekly_sessions/week_13/Week_13_2.ipynb "Go to code")
+### Goals of week 13-2:
+- [x] Working with real data
+- [x] Sequential models
+- [x] Working with NLP
+ 
+### Result
+
+In previous lab session we worked with a Bag-of-words models.\
+Now, let's try sequential models.
+
+Let's build a sequence model built on one-hot encoded vector sequences
+```python
+import tensorflow as tf
+inputs = keras.Input(shape=(None,), dtype="int64")
+embedded = tf.one_hot(inputs, depth=max_tokens)
+x = layers.Bidirectional(layers.LSTM(32))(embedded)
+x = layers.Dropout(0.5)(x)
+ouputs = layers.Dense(1, activation="sigmoid")(x)
+model = keras.Model(inputs, ouputs)
+model.compile(
+    optimizer="rmsprop",
+    loss="binary_crossentropy",
+    metrics=["accuracy"]
+)
+model.summary()
+```
+
+Here we can see model's specs
+```
+
+
+Model: "model"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ input_1 (InputLayer)        [(None, None)]            0         
+                                                                 
+ tf.one_hot (TFOpLambda)     (None, None, 20000)       0         
+                                                                 
+ bidirectional (Bidirectiona  (None, 64)               5128448   
+ l)                                                              
+                                                                 
+ dropout (Dropout)           (None, 64)                0         
+                                                                 
+ dense (Dense)               (None, 1)                 65        
+                                                                 
+=================================================================
+Total params: 5,128,513
+Trainable params: 5,128,513
+Non-trainable params: 0
+```
+After training 
+```python
+callbacks = [
+    keras.callbacks.ModelCheckpoint("one_hot_bidir_lstm.keras",
+    save_best_only=True)
+]
+model.fit(int_train_ds, validation_data=int_val_ds, 
+          epochs=10, callbacks=callbacks)
+model = keras.models.load_model("one_hot_bidir_lstm.keras")
+print(f"Test acc: {model.evaluate(int_test_ds)[1]:.3f}")
+```
+We can see how accurate this model is
+```
+Test acc: 0.986
+```
+
+Now, let's add an embedding layer and see the results
+```python
+inputs = keras.Input(shape=(None,), dtype="int64")
+embedded = layers.Embedding(input_dim=max_tokens, output_dim=256)(inputs)
+x = layers.Bidirectional(layers.LSTM(32))(embedded)
+x = layers.Dropout(0.5)(x)
+ouputs = layers.Dense(1, activation="sigmoid")(x)
+model = keras.Model(inputs, ouputs)
+model.compile(
+    optimizer="rmsprop",
+    loss="binary_crossentropy",
+    metrics=["accuracy"]
+)
+```
+Model
+```
+
+
+Model: "model_1"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ input_2 (InputLayer)        [(None, None)]            0         
+                                                                 
+ embedding_1 (Embedding)     (None, None, 256)         5120000   
+                                                                 
+ bidirectional_1 (Bidirectio  (None, 64)               73984     
+ nal)                                                            
+                                                                 
+ dropout_1 (Dropout)         (None, 64)                0         
+                                                                 
+ dense_1 (Dense)             (None, 1)                 65        
+                                                                 
+=================================================================
+Total params: 5,194,049
+Trainable params: 5,194,049
+Non-trainable params: 0
+```
+Accuracy
+```
+Test acc: 0.987
+```
+
+Let's test model with padding and masking
+```python
+
+
+inputs = keras.Input(shape=(None,), dtype="int64")
+embedded = layers.Embedding(
+    input_dim=max_tokens, output_dim=256, mask_zero=True)(inputs)
+x = layers.Bidirectional(layers.LSTM(32))(embedded)
+x = layers.Dropout(0.5)(x)
+ouputs = layers.Dense(1, activation="si
+```
+Model
+```
+
+
+Model: "model_2"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ input_3 (InputLayer)        [(None, None)]            0         
+                                                                 
+ embedding_2 (Embedding)     (None, None, 256)         5120000   
+                                                                 
+ bidirectional_2 (Bidirectio  (None, 64)               73984     
+ nal)                                                            
+                                                                 
+ dropout_2 (Dropout)         (None, 64)                0         
+                                                                 
+ dense_2 (Dense)             (None, 1)                 65        
+                                                                 
+=================================================================
+Total params: 5,194,049
+Trainable params: 5,194,049
+Non-trainable params: 0
+```
+Accuracy
+```
+Test acc: 0.999
+```
+Also, we can use pretrained models such as GloVe
+```python
+!wget http://nlp.stanford.edu/data/glove.6B.zip
+!unzip -q glove.6B.zip
+
+
+import numpy as np
+path_to_glove_file = "glove.6B.100d.txt"
+
+embeddings_index = {}
+with open(path_to_glove_file) as f:
+  for line in f:
+    word, coefs = line.split(maxsplit=1)
+    coefs = np.fromstring(coefs, "f", sep=" ")
+    embeddings_index[word] = coefs
+ ```
