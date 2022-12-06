@@ -671,9 +671,9 @@ Non-trainable params: 0
 
 ### Result
 At first let's explore given dataset
--- plot
+![plot](images/11_1.png "plot")
 Now, let's make a naive prediction by shifitng a given data
--- plot 2
+![plot](images/11_2.png "plot")
 Time to build and train a RNN
 ```python
 # Custom layer that retrieves only last time step from RNN output.
@@ -697,7 +697,7 @@ train_model(model, device, EPOCHS, BATCH_SIZE, trainset, testset, optimizer,
             loss_function, "mae")     
 ```
 Now we can plot the prediciton of our RNN
--- plot
+![plot](images/11_3.png "plot")
 
 
 # ![Week 12](Weekly_sessions/week12/Week_12.ipynb "Go to code")
@@ -709,7 +709,7 @@ Now we can plot the prediciton of our RNN
 ### Result
 Given the jena_clinmate data `!wget https://s3.amazonaws.com/keras-datasets/jena_climate_2009_2016.csv.zip`
 Let's plot the dataset
--- plot
+![plot](images/12_1.png "plot")
 After data preprocessing and preparing, let's make a common sence non-machine learning model
 ```python
 def evaluate_naive_method(dataset):
@@ -735,7 +735,7 @@ And its result
 Test MAE: 2.65
 ```
 Let's plot the results
--- polot
+![plot](images/12_2.png "plot")
 Moving on to a 1D convolution model
 ```python
 inputs = keras.Input(shape=(sequence_length, raw_data.shape[-1]))
