@@ -581,13 +581,13 @@ Model evealations are given in the following table
 |Conf4|128/128/64/1|Dropout=0.2|7.3|13.0|
 |Conf5|128/128/64/1|Dropout=0.3|11.3|13.0|
 
-# ![Week 10-1](Weekly_sessions/week10/Week_10_1.ipynb "Go to code")
+# ![Week 10-1](Weekly_sessions/week10/week_10_1.ipynb "Go to code")
 ### Goals of week 10-1:
 - [x] Working with keras Resnet50
 
 ### Result
 As a sample image for working with resnet50 was choosen this picture of a dog:
--- picutre of a dog
+![Dog](images/dog.jpeg "a dog")
 At first we need to preprocess the chosen image
 ```python
 preprocess = transforms.Compose([
